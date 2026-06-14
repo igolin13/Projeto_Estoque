@@ -1,4 +1,4 @@
-namespace SistemaEstoque.Models
+namespace Projeto_Estoque.Models
 {
     public enum StatusExpedicao
     {

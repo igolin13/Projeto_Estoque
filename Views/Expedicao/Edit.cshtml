@@ -1,4 +1,4 @@
-@model SistemaEstoque.Models.Expedicao
+@model Projeto_Estoque.Models.Expedicao
 
 @{
     ViewData["Title"] = "Editar Expedição";
@@ -40,7 +40,7 @@
                 <select asp-for="Status" class="form-select" asp-items="statusList"></select>
                 <span asp-validation-for="Status" class="text-danger"></span>
 
-                @if (Model.Status == SistemaEstoque.Models.StatusExpedicao.Entregue)
+                @if (Model.Status == Projeto_Estoque.Models.StatusExpedicao.Entregue)
                 {
                     <div class="alert alert-warning mt-2 py-1 px-2 small">
                         ⚠️ Pedido já <strong>Entregue</strong>. Status não pode regredir.

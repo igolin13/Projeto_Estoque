@@ -8,7 +8,6 @@
         public decimal Preco { get; set; }
         public int QuantidadeEstoque { get; set; }
 
-        // Comentado por enquanto:
-        // public ICollection<PedidoProduto>? PedidoProdutos { get; set; }
+        public ICollection<PedidoProduto>? PedidoProdutos { get; set; }
     }
 }

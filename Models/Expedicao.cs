@@ -1,6 +1,7 @@
+using Projeto_Estoque.Models;
 using System.ComponentModel.DataAnnotations;
 
-namespace SistemaEstoque.Models
+namespace Projeto_Estoque.Models
 {
     public class Expedicao
     {
@@ -12,7 +13,7 @@ namespace SistemaEstoque.Models
         public DateTime DataEnvio { get; set; }
 
         [Required(ErrorMessage = "A transportadora é obrigatória.")]
-        [StringLength(100, ErrorMessage = "Transportadora deve ter no máximo 100 caracteres.")]
+        [StringLength(100)]
         [Display(Name = "Transportadora")]
         public string Transportadora { get; set; } = string.Empty;
 
@@ -20,12 +21,10 @@ namespace SistemaEstoque.Models
         [Display(Name = "Status")]
         public StatusExpedicao Status { get; set; } = StatusExpedicao.Pendente;
 
-        // FK para Pedido (RN1: obrigatório)
         [Required(ErrorMessage = "O pedido é obrigatório.")]
         [Display(Name = "Pedido")]
         public int PedidoId { get; set; }
 
-        // Navigation property
         public Pedido? Pedido { get; set; }
     }
 }

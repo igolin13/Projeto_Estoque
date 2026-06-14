@@ -1,16 +1,16 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using SistemaEstoque.Data;
-using SistemaEstoque.Models;
+using Projeto_Estoque.Data;       
+using Projeto_Estoque.Models;
 
-namespace SistemaEstoque.Controllers
+namespace Projeto_Estoque.Controllers
 {
     public class ExpedicaoController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly EstoqueContext _context;
 
-        public ExpedicaoController(ApplicationDbContext context)
+        public ExpedicaoController(EstoqueContext context)
         {
             _context = context;
         }
