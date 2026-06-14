@@ -1,0 +1,43 @@
+@model SistemaEstoque.Models.Expedicao
+
+@{
+    ViewData["Title"] = "Excluir Expedição";
+}
+
+<h2>🗑️ Excluir Expedição</h2>
+<hr />
+
+<div class="alert alert-danger">
+    <strong>Tem certeza que deseja excluir esta expedição?</strong>
+    Esta ação não pode ser desfeita.
+</div>
+
+<div class="card mb-4" style="max-width: 480px;">
+    <div class="card-header bg-danger text-white fw-bold">
+        Expedição #@Model.Id
+    </div>
+    <div class="card-body">
+        <dl class="row mb-0">
+            <dt class="col-sm-5">Pedido</dt>
+            <dd class="col-sm-7">#@Model.PedidoId</dd>
+
+            <dt class="col-sm-5">Cliente</dt>
+            <dd class="col-sm-7">@Model.Pedido?.Cliente?.Nome</dd>
+
+            <dt class="col-sm-5">Transportadora</dt>
+            <dd class="col-sm-7">@Model.Transportadora</dd>
+
+            <dt class="col-sm-5">Data de Envio</dt>
+            <dd class="col-sm-7">@Model.DataEnvio.ToString("dd/MM/yyyy")</dd>
+
+            <dt class="col-sm-5">Status</dt>
+            <dd class="col-sm-7">@Model.Status</dd>
+        </dl>
+    </div>
+</div>
+
+<form asp-action="Delete">
+    <input type="hidden" asp-for="Id" />
+    <button type="submit" class="btn btn-danger">🗑️ Confirmar Exclusão</button>
+    <a asp-action="Index" class="btn btn-outline-secondary ms-2">← Cancelar</a>
+</form>

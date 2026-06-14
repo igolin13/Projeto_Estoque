@@ -1,0 +1,56 @@
+@model SistemaEstoque.Models.Expedicao
+
+@{
+    ViewData["Title"] = "Nova Expedição";
+    var pedidoSelectList = ViewData["PedidoSelectList"] as List<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem>;
+    var statusList = ViewData["StatusList"] as Microsoft.AspNetCore.Mvc.Rendering.SelectList;
+}
+
+<h2>📦 Nova Expedição</h2>
+<hr />
+
+<div class="row">
+    <div class="col-md-6">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+            <div class="mb-3">
+                <label asp-for="PedidoId" class="form-label fw-bold"></label>
+                <select asp-for="PedidoId" class="form-select"
+                        asp-items="pedidoSelectList">
+                    <option value="">-- Selecione um pedido --</option>
+                </select>
+                <span asp-validation-for="PedidoId" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Transportadora" class="form-label fw-bold"></label>
+                <input asp-for="Transportadora" class="form-control"
+                       placeholder="Ex: Correios, Jadlog, Loggi..." />
+                <span asp-validation-for="Transportadora" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="DataEnvio" class="form-label fw-bold"></label>
+                <input asp-for="DataEnvio" class="form-control" type="date" />
+                <span asp-validation-for="DataEnvio" class="text-danger"></span>
+                <small class="text-muted">Deve ser igual ou posterior à data do pedido.</small>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Status" class="form-label fw-bold"></label>
+                <select asp-for="Status" class="form-select" asp-items="statusList"></select>
+                <span asp-validation-for="Status" class="text-danger"></span>
+            </div>
+
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-primary">💾 Salvar</button>
+                <a asp-action="Index" class="btn btn-outline-secondary">← Voltar</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
