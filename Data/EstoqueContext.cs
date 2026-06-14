@@ -10,16 +10,18 @@ namespace Projeto_Estoque.Data
         }
 
         public DbSet<Produto> Produtos { get; set; }
-        public DbSet<Cliente> Clientes { get; set; }
-        public DbSet<Pedido> Pedidos { get; set; }
-        public DbSet<PedidoProduto> PedidoProdutos { get; set; }
-        public DbSet<Expedicao> Expedicoes { get; set; }
+
+        // As outras linhas ficam comentadas por enquanto:
+        // public DbSet<Cliente> Clientes { get; set; }
+        // public DbSet<Pedido> Pedidos { get; set; }
+        // public DbSet<PedidoProduto> PedidoProdutos { get; set; }
+        // public DbSet<Expedicao> Expedicoes { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            // GSD-SPEC: Chave composta da tabela intermediária N:N PedidoProduto
-            modelBuilder.Entity<PedidoProduto>()
-                .HasKey(pp => new { pp.PedidoId, pp.ProdutoId });
+            // Comentado também pois depende de PedidoProduto
+            // modelBuilder.Entity<PedidoProduto>()
+            //     .HasKey(pp => new { pp.PedidoId, pp.ProdutoId });
         }
     }
 }
