@@ -49,7 +49,7 @@ namespace Projeto_Estoque.Controllers
 
             [HttpPost] // Criar novo produto // Recebe os dados do formulário e salva no banco
             [ValidateAntiForgeryToken]
-            public async Task<IActionResult> Create([Bind("Id,Nome,Descricao,Preco,Quantidade")]Produto produto)
+            public async Task<IActionResult> Create([Bind("Id,Nome,Descricao,Preco,QuantidadeEstoque")]Produto produto)
             {
                 if (ModelState.IsValid)
                 {
@@ -82,7 +82,7 @@ namespace Projeto_Estoque.Controllers
 
             [HttpPost]
             [ValidateAntiForgeryToken]
-            public async Task<IActionResult> Edit(int id, [Bind ("Id,Nome,Descricao,Preco,Quantidade")]Produto produto)
+            public async Task<IActionResult> Edit(int id, [Bind ("Id,Nome,Descricao,Preco,QuantidadeEstoque")]Produto produto)
             {
                 if (id != produto.Id)
                     return NotFound();
