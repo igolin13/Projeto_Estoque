@@ -1,0 +1,92 @@
+@{
+    ViewData["Title"] = "Relatórios de Expedição";
+
+    var porTransportadora = ViewData["PorTransportadora"] as IEnumerable<dynamic>;
+    var transportadorasAtivas = ViewData["TransportadorasAtivas"] as IEnumerable<dynamic>;
+    int limite = (int)(ViewData["LimiteEnvios"] ?? 1);
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2>📊 Relatórios de Expedição</h2>
+    <a asp-action="Index" class="btn btn-outline-secondary">← Voltar</a>
+</div>
+
+<div class="row g-4">
+
+    {{!-- Q2: GroupBy Transportadora --}}
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header bg-primary text-white fw-bold">
+                📦 Envios por Transportadora
+                <small class="fw-normal ms-2">(LINQ: GroupBy)</small>
+            </div>
+            <div class="card-body p-0">
+                @if (porTransportadora == null || !porTransportadora.Any())
+                {
+                    <p class="p-3 text-muted mb-0">Sem dados para exibir.</p>
+                }
+                else
+                {
+                    <table class="table table-sm mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Transportadora</th>
+                                <th class="text-center">Total de Envios</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in porTransportadora)
+                            {
+                                <tr>
+                                    <td>@item.Transportadora</td>
+                                    <td class="text-center">
+                                        <span class="badge bg-primary">@item.Total</span>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                }
+            </div>
+        </div>
+    </div>
+
+    {{!-- Q3: GroupBy + Where (Having) --}}
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header bg-success text-white fw-bold">
+                🏆 Transportadoras com mais de @limite envio(s)
+                <small class="fw-normal ms-2">(LINQ: GroupBy + Where)</small>
+            </div>
+            <div class="card-body p-0">
+                @if (transportadorasAtivas == null || !transportadorasAtivas.Any())
+                {
+                    <p class="p-3 text-muted mb-0">Nenhuma transportadora ultrapassou o limite de @limite envio(s).</p>
+                }
+                else
+                {
+                    <table class="table table-sm mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Transportadora</th>
+                                <th class="text-center">Total de Envios</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in transportadorasAtivas)
+                            {
+                                <tr>
+                                    <td>@item.Transportadora</td>
+                                    <td class="text-center">
+                                        <span class="badge bg-success">@item.Total</span>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                }
+            </div>
+        </div>
+    </div>
+
+</div>
