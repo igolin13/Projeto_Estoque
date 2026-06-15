@@ -2,11 +2,12 @@ using Microsoft.AspNetCore.Mvc;
 using Projeto_Estoque.Models;
 using System.Diagnostics;
 
-namespace Projeto_Estoque.Controllers
+namespace Projeto_Estoque.Models;
+
+public class HomeController : Controller
+
 {
-    public class HomeController : Controller
-    {
-        private readonly ILogger<HomeController> _logger;
+    private readonly ILogger<HomeController> _logger;
 
         public HomeController(ILogger<HomeController> logger)
         {
