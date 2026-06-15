@@ -1,8 +1,60 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Home";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div style="text-align:center; padding: 60px 20px;">
+    <h1 style="font-size:2.5rem; font-weight:700; color:#1a1a2e;">
+        📦 Sistema de Estoque
+    </h1>
+    <p style="color:#888; font-size:1.1rem; margin-bottom:40px;">
+        Gerencie produtos, clientes, pedidos e expedições em um só lugar.
+    </p>
+
+    <div style="display:flex; justify-content:center; gap:20px; flex-wrap:wrap;">
+
+        <a asp-controller="Produto" asp-action="Index"
+           style="text-decoration:none; background:#fff; border-radius:12px;
+                  box-shadow:0 2px 12px rgba(0,0,0,0.08); padding:30px 40px;
+                  min-width:160px; transition:transform 0.2s;"
+           onmouseover="this.style.transform='translateY(-4px)'"
+           onmouseout="this.style.transform='translateY(0)'">
+            <div style="font-size:2.5rem;">🛒</div>
+            <div style="font-weight:700; color:#1a1a2e; margin-top:10px;">Produtos</div>
+            <div style="font-size:0.85rem; color:#888;">Cadastro e estoque</div>
+        </a>
+
+        <a asp-controller="Clientes" asp-action="Index"
+           style="text-decoration:none; background:#fff; border-radius:12px;
+                  box-shadow:0 2px 12px rgba(0,0,0,0.08); padding:30px 40px;
+                  min-width:160px; transition:transform 0.2s;"
+           onmouseover="this.style.transform='translateY(-4px)'"
+           onmouseout="this.style.transform='translateY(0)'">
+            <div style="font-size:2.5rem;">👤</div>
+            <div style="font-weight:700; color:#1a1a2e; margin-top:10px;">Clientes</div>
+            <div style="font-size:0.85rem; color:#888;">Base de clientes</div>
+        </a>
+
+        <a asp-controller="Pedido" asp-action="Index"
+           style="text-decoration:none; background:#fff; border-radius:12px;
+                  box-shadow:0 2px 12px rgba(0,0,0,0.08); padding:30px 40px;
+                  min-width:160px; transition:transform 0.2s;"
+           onmouseover="this.style.transform='translateY(-4px)'"
+           onmouseout="this.style.transform='translateY(0)'">
+            <div style="font-size:2.5rem;">📋</div>
+            <div style="font-weight:700; color:#1a1a2e; margin-top:10px;">Pedidos</div>
+            <div style="font-size:0.85rem; color:#888;">Gestão de pedidos</div>
+        </a>
+
+        <a asp-controller="Expedicao" asp-action="Index"
+           style="text-decoration:none; background:#fff; border-radius:12px;
+                  box-shadow:0 2px 12px rgba(0,0,0,0.08); padding:30px 40px;
+                  min-width:160px; transition:transform 0.2s;"
+           onmouseover="this.style.transform='translateY(-4px)'"
+           onmouseout="this.style.transform='translateY(0)'">
+            <div style="font-size:2.5rem;">🚚</div>
+            <div style="font-weight:700; color:#1a1a2e; margin-top:10px;">Expedição</div>
+            <div style="font-size:0.85rem; color:#888;">Rastreio e entrega</div>
+        </a>
+
+    </div>
 </div>

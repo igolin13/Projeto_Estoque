@@ -1,53 +1,70 @@
 ﻿@model IEnumerable<Projeto_Estoque.Models.Produto>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Produtos";
 }
 
-<h1>Index</h1>
+<div class="page-header">
+    <div>
+        <h1 class="page-title">🛒 Produtos</h1>
+        <p class="page-subtitle">Gerencie o catálogo e estoque de produtos</p>
+    </div>
+    <a asp-action="Create" class="btn btn-primary">+ Novo Produto</a>
+</div>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Nome)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Descricao)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Preco)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.QuantidadeEstoque)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Nome)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Descricao)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Preco)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.QuantidadeEstoque)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+<div class="card">
+    <div class="card-header">
+        <span>Total: <strong>@Model.Count() produtos</strong></span>
+    </div>
+    @if (!Model.Any())
+    {
+        <div class="empty-state">
+            <div class="empty-icon">🛒</div>
+            <h3>Nenhum produto cadastrado</h3>
+            <p>Clique em "Novo Produto" para começar.</p>
+        </div>
+    }
+    else
+    {
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Nome</th>
+                    <th>Descrição</th>
+                    <th>Preço</th>
+                    <th>Qtd. Estoque</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td><span class="badge-id">@item.Id</span></td>
+                        <td><strong>@item.Nome</strong></td>
+                        <td>@item.Descricao</td>
+                        <td><strong>R$ @item.Preco.ToString("N2")</strong></td>
+                        <td>
+                            @if (item.QuantidadeEstoque <= 5)
+                            {
+                                <span class="badge bg-danger">@item.QuantidadeEstoque</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-success">@item.QuantidadeEstoque</span>
+                            }
+                        </td>
+                        <td>
+                            <div class="action-group">
+                                <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-info">Detalhes</a>
+                                <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-warning">Editar</a>
+                                <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-outline-danger">Excluir</a>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</div>
