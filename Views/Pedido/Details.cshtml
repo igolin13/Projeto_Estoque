@@ -1,0 +1,102 @@
+@model Projeto_Estoque.Models.Pedido
+
+@{
+    ViewData["Title"] = $"Pedido #{Model.Id}";
+}
+
+<div class="page-header">
+    <div>
+        <h1 class="page-title">Pedido <span class="badge-lg">#@Model.Id</span></h1>
+        <p class="page-subtitle">Realizado em @Model.DataPedido.ToString("dd/MM/yyyy 'às' HH:mm")</p>
+    </div>
+    <div class="action-group">
+        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">Editar</a>
+        <a asp-action="Index" class="btn btn-outline">← Voltar</a>
+    </div>
+</div>
+
+<div class="details-grid">
+
+    <!-- Card Cliente -->
+    <div class="card detail-card">
+        <div class="card-section-title">👤 Cliente</div>
+        <div class="info-row">
+            <span class="info-label">Nome</span>
+            <span class="info-value">@Model.Cliente?.Nome</span>
+        </div>
+        <div class="info-row">
+            <span class="info-label">E-mail</span>
+            <span class="info-value">@Model.Cliente?.Email</span>
+        </div>
+        <div class="info-row">
+            <span class="info-label">Telefone</span>
+            <span class="info-value">@Model.Cliente?.Telefone</span>
+        </div>
+    </div>
+
+    <!-- Card Expedição -->
+    <div class="card detail-card">
+        <div class="card-section-title">🚚 Expedição</div>
+        @if (Model.Expedicao != null)
+        {
+            <div class="info-row">
+                <span class="info-label">Transportadora</span>
+                <span class="info-value">@Model.Expedicao.Transportadora</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Status</span>
+                <span class="status-badge">@Model.Expedicao.Status</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Data de Envio</span>
+                <span class="info-value">
+                    @Model.Expedicao.DataEnvio.ToString("dd/MM/yyyy"))
+                </span>
+            </div>
+        }
+        else
+        {
+            <div class="empty-small">
+                <p>Nenhuma expedição registrada ainda.</p>
+            </div>
+        }
+    </div>
+
+</div>
+
+<!-- Produtos do Pedido -->
+<div class="card mt-4">
+    <div class="card-header">
+        <span class="card-section-title">📦 Produtos do Pedido</span>
+    </div>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Produto</th>
+                <th>Preço Unit.</th>
+                <th>Quantidade</th>
+                <th>Subtotal</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model.PedidoProdutos != null && Model.PedidoProdutos.Any())
+            {
+                @foreach (var item in Model.PedidoProdutos)
+                {
+                    <tr>
+                        <td><strong>@item.Produto?.Nome</strong></td>
+                        <td>R$ @item.Produto?.Preco.ToString("N2")</td>
+                        <td><span class="tag">@item.Quantidade</span></td>
+                        <td><strong class="valor">R$ @((item.PrecoUnitario * item.Quantidade).ToString("N2"))</strong></td>
+                    </tr>
+                }
+            }
+        </tbody>
+        <tfoot>
+            <tr class="total-row">
+                <td colspan="3"><strong>Valor Total do Pedido</strong></td>
+                <td><strong class="valor-total">R$ @Model.ValorTotal.ToString("N2")</strong></td>
+            </tr>
+        </tfoot>
+    </table>
+</div>

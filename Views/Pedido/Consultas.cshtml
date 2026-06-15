@@ -1,0 +1,122 @@
+@{
+    ViewData["Title"] = "Consultas LINQ";
+    var pedidosComClientes = ViewBag.PedidosComClientes as dynamic;
+    var pedidosPorCliente = ViewBag.PedidosPorCliente as dynamic;
+    var clientesFrequentes = ViewBag.ClientesFrequentes as dynamic;
+}
+
+<div class="page-header">
+    <div>
+        <h1 class="page-title">Consultas LINQ</h1>
+        <p class="page-subtitle">Análises implementadas com técnica GSD de IA</p>
+    </div>
+    <a asp-action="Index" class="btn btn-outline">← Voltar aos Pedidos</a>
+</div>
+
+<!-- Consulta 1 -->
+<div class="card mb-4">
+    <div class="card-header">
+        <span class="card-section-title">📋 Consulta 1 — Pedidos com Clientes</span>
+        <span class="tag">Include + Select</span>
+    </div>
+    <div class="code-block">
+        <pre>_context.Pedidos
+    .Include(p => p.Cliente)
+    .Select(p => new { Pedido = p.Id, Cliente = p.Cliente.Nome, Valor = p.ValorTotal })</pre>
+    </div>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Pedido</th>
+                <th>Cliente</th>
+                <th>Data</th>
+                <th>Valor</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in (IEnumerable<dynamic>)ViewBag.PedidosComClientes)
+            {
+                <tr>
+                    <td><span class="badge">#@item.Pedido</span></td>
+                    <td>@item.Cliente</td>
+                    <td>@item.Data.ToString("dd/MM/yyyy")</td>
+                    <td><strong class="valor">R$ @item.Valor.ToString("N2")</strong></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<!-- Consulta 2 -->
+<div class="card mb-4">
+    <div class="card-header">
+        <span class="card-section-title">📊 Consulta 2 — Pedidos por Cliente</span>
+        <span class="tag">GroupBy + Count</span>
+    </div>
+    <div class="code-block">
+        <pre>_context.Pedidos
+    .GroupBy(p => p.Cliente.Nome)
+    .Select(g => new { Cliente = g.Key, TotalPedidos = g.Count() })</pre>
+    </div>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Cliente</th>
+                <th>Total de Pedidos</th>
+                <th>Valor Acumulado</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in (IEnumerable<dynamic>)ViewBag.PedidosPorCliente)
+            {
+                <tr>
+                    <td>@item.Cliente</td>
+                    <td><span class="tag">@item.TotalPedidos pedido(s)</span></td>
+                    <td><strong class="valor">R$ @item.ValorTotal.ToString("N2")</strong></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<!-- Consulta 3 -->
+<div class="card mb-4">
+    <div class="card-header">
+        <span class="card-section-title">⭐ Consulta 3 — Clientes Frequentes</span>
+        <span class="tag">Where + Having</span>
+    </div>
+    <div class="code-block">
+        <pre>_context.Pedidos
+    .GroupBy(p => p.Cliente.Nome)
+    .Where(g => g.Count() > 1)
+    .Select(g => new { Cliente = g.Key, Quantidade = g.Count() })</pre>
+    </div>
+    @if (((IEnumerable<dynamic>)ViewBag.ClientesFrequentes).Any())
+    {
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Cliente</th>
+                    <th>Pedidos</th>
+                    <th>Valor Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in (IEnumerable<dynamic>)ViewBag.ClientesFrequentes)
+                {
+                    <tr>
+                        <td><strong>@item.Cliente</strong></td>
+                        <td><span class="tag">@item.Quantidade pedidos</span></td>
+                        <td><strong class="valor">R$ @item.ValorAcumulado.ToString("N2")</strong></td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <div class="empty-small">
+            <p>Nenhum cliente com mais de 1 pedido ainda. Adicione mais pedidos para ver os resultados.</p>
+        </div>
+    }
+</div>

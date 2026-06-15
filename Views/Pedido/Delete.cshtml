@@ -1,0 +1,48 @@
+@model Projeto_Estoque.Models.Pedido
+
+@{
+    ViewData["Title"] = $"Excluir Pedido #{Model.Id}";
+}
+
+<div class="page-header">
+    <div>
+        <h1 class="page-title">Excluir Pedido <span class="badge-lg">#@Model.Id</span></h1>
+        <p class="page-subtitle">Esta ação não pode ser desfeita</p>
+    </div>
+</div>
+
+<div class="card danger-card">
+    <div class="card-section-title">⚠️ Confirmar Exclusão</div>
+    <p>Você tem certeza que deseja excluir o pedido abaixo? Todos os itens e a expedição vinculada também serão removidos.</p>
+
+    <div class="info-group mt-3">
+        <div class="info-row">
+            <span class="info-label">Pedido</span>
+            <span class="info-value">#@Model.Id</span>
+        </div>
+        <div class="info-row">
+            <span class="info-label">Cliente</span>
+            <span class="info-value">@Model.Cliente?.Nome</span>
+        </div>
+        <div class="info-row">
+            <span class="info-label">Data</span>
+            <span class="info-value">@Model.DataPedido.ToString("dd/MM/yyyy")</span>
+        </div>
+        <div class="info-row">
+            <span class="info-label">Produtos</span>
+            <span class="info-value">@(Model.PedidoProdutos?.Count ?? 0) item(ns)</span>
+        </div>
+        <div class="info-row">
+            <span class="info-label">Valor Total</span>
+            <strong class="valor-total">R$ @Model.ValorTotal.ToString("N2")</strong>
+        </div>
+    </div>
+
+    <form method="post" asp-action="Delete" asp-route-id="@Model.Id" class="mt-4">
+        @Html.AntiForgeryToken()
+        <div class="form-actions">
+            <button type="submit" class="btn btn-danger btn-lg">Sim, excluir pedido</button>
+            <a asp-action="Index" class="btn btn-outline">Cancelar</a>
+        </div>
+    </form>
+</div>

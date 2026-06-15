@@ -1,0 +1,184 @@
+@model Projeto_Estoque.Models.ViewModels.PedidoViewModel
+
+@{
+    ViewData["Title"] = $"Editar Pedido #{Model.Id}";
+}
+
+<div class="page-header">
+    <div>
+        <h1 class="page-title">Editar Pedido <span class="badge-lg">#@Model.Id</span></h1>
+        <p class="page-subtitle">Altere o cliente ou os produtos do pedido</p>
+    </div>
+    <a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-outline">← Voltar</a>
+</div>
+
+<form method="post" asp-action="Edit" asp-route-id="@Model.Id" id="formPedido">
+    @Html.AntiForgeryToken()
+
+    <div class="form-grid">
+
+        <div class="card">
+            <div class="card-section-title">👤 Cliente</div>
+            <div class="form-group">
+                <label class="form-label">Selecione o cliente *</label>
+                <select name="clienteId" class="form-control" required>
+                    @foreach (var c in Model.Clientes)
+                    {
+                        <option value="@c.Value" selected="@c.Selected">@c.Text</option>
+                    }
+                </select>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-section-title">📦 Adicionar Produto</div>
+            <div class="add-produto-form">
+                <div class="form-group">
+                    <label class="form-label">Produto</label>
+                    <select id="selectProduto" class="form-control">
+                        <option value="">— Selecione —</option>
+                        @foreach (var p in Model.Produtos)
+                        {
+                            <option value="@p.Value">@p.Text</option>
+                        }
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Quantidade</label>
+                    <input type="number" id="inputQtd" class="form-control" value="1" min="1" />
+                </div>
+                <button type="button" class="btn btn-primary" onclick="adicionarProduto()">Adicionar</button>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="card mt-4">
+        <div class="card-header">
+            <span class="card-section-title">Itens do Pedido</span>
+            <span id="totalDisplay" class="valor-total">R$ 0,00</span>
+        </div>
+
+        <div id="emptyMessage" class="empty-state" style="display:none;">
+            <div class="empty-icon">🛒</div>
+            <p>Nenhum produto adicionado.</p>
+        </div>
+
+        <table class="table" id="tabelaItens">
+            <thead>
+                <tr>
+                    <th>Produto</th>
+                    <th>Preço Unit.</th>
+                    <th>Quantidade</th>
+                    <th>Subtotal</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody id="corpoTabela"></tbody>
+            <tfoot>
+                <tr class="total-row">
+                    <td colspan="3"><strong>Total</strong></td>
+                    <td id="totalTabela" class="valor-total"><strong>R$ 0,00</strong></td>
+                    <td></td>
+                </tr>
+            </tfoot>
+        </table>
+
+        <div id="camposHidden"></div>
+    </div>
+
+    <div class="form-actions">
+        <button type="submit" class="btn btn-primary btn-lg">Salvar Alterações</button>
+        <a asp-action="Index" class="btn btn-outline">Cancelar</a>
+    </div>
+</form>
+
+@section Scripts {
+<script>
+    const produtosData = {};
+
+    document.querySelectorAll('#selectProduto option[value]').forEach(opt => {
+        if (opt.value) {
+            const match = opt.textContent.match(/R\$\s*([\d.,]+)/);
+            if (match) {
+                const precoStr = match[1].replace('.', '').replace(',', '.');
+                produtosData[opt.value] = {
+                    id: opt.value,
+                    nome: opt.textContent.split(' - ')[0].trim(),
+                    preco: parseFloat(precoStr)
+                };
+            }
+        }
+    });
+
+    // Carrega os itens existentes do pedido
+    let itens = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(
+        Model.ItensSelecionados.Select(i => new {
+            id = i.ProdutoId.ToString(),
+            nome = i.NomeProduto,
+            preco = i.PrecoProduto,
+            quantidade = i.Quantidade
+        })
+    ));
+
+    atualizarTabela();
+
+    function adicionarProduto() {
+        const select = document.getElementById('selectProduto');
+        const qtdInput = document.getElementById('inputQtd');
+        const produtoId = select.value;
+        const qtd = parseInt(qtdInput.value);
+
+        if (!produtoId) { alert('Selecione um produto.'); return; }
+        if (!qtd || qtd < 1) { alert('Quantidade deve ser maior que zero.'); return; }
+
+        const existente = itens.find(i => i.id === produtoId);
+        if (existente) {
+            existente.quantidade += qtd;
+        } else {
+            const prod = produtosData[produtoId];
+            itens.push({ id: produtoId, nome: prod.nome, preco: prod.preco, quantidade: qtd });
+        }
+
+        atualizarTabela();
+        select.value = '';
+        qtdInput.value = 1;
+    }
+
+    function removerItem(id) {
+        itens = itens.filter(i => i.id !== id);
+        atualizarTabela();
+    }
+
+    function atualizarTabela() {
+        const tbody = document.getElementById('corpoTabela');
+        const hidden = document.getElementById('camposHidden');
+
+        tbody.innerHTML = '';
+        hidden.innerHTML = '';
+
+        let total = 0;
+
+        itens.forEach(item => {
+            const sub = item.preco * item.quantidade;
+            total += sub;
+
+            tbody.innerHTML += `
+                <tr>
+                    <td><strong>${item.nome}</strong></td>
+                    <td>R$ ${item.preco.toFixed(2).replace('.', ',')}</td>
+                    <td><span class="tag">${item.quantidade}</span></td>
+                    <td><strong class="valor">R$ ${sub.toFixed(2).replace('.', ',')}</strong></td>
+                    <td><button type="button" class="btn btn-sm btn-danger" onclick="removerItem('${item.id}')">✕</button></td>
+                </tr>`;
+
+            hidden.innerHTML += `<input type="hidden" name="produtoIds" value="${item.id}" />`;
+            hidden.innerHTML += `<input type="hidden" name="quantidades" value="${item.quantidade}" />`;
+        });
+
+        const totalFmt = 'R$ ' + total.toFixed(2).replace('.', ',');
+        document.getElementById('totalTabela').innerHTML = `<strong>${totalFmt}</strong>`;
+        document.getElementById('totalDisplay').textContent = totalFmt;
+    }
+</script>
+}

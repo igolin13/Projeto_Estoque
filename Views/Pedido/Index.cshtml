@@ -1,0 +1,80 @@
+@model IEnumerable<Projeto_Estoque.Models.Pedido>
+
+@{
+    ViewData["Title"] = "Pedidos";
+}
+
+<div class="page-header">
+    <div>
+        <h1 class="page-title">Pedidos</h1>
+        <p class="page-subtitle">Gerencie todos os pedidos do sistema</p>
+    </div>
+    <a asp-action="Create" class="btn btn-primary">
+        <span>+</span> Novo Pedido
+    </a>
+</div>
+
+@if (TempData["Sucesso"] != null)
+{
+    <div class="alert alert-success">@TempData["Sucesso"]</div>
+}
+@if (TempData["Erro"] != null)
+{
+    <div class="alert alert-danger">@TempData["Erro"]</div>
+}
+
+<div class="card">
+    <div class="card-header">
+        <span>Total: <strong>@Model.Count() pedidos</strong></span>
+        <a asp-action="Consultas" class="btn btn-outline">📊 Ver Consultas LINQ</a>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="empty-state">
+            <div class="empty-icon">📦</div>
+            <h3>Nenhum pedido encontrado</h3>
+            <p>Crie o primeiro pedido clicando no botão acima.</p>
+        </div>
+    }
+    else
+    {
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Cliente</th>
+                    <th>Data</th>
+                    <th>Itens</th>
+                    <th>Valor Total</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var pedido in Model)
+                {
+                    <tr>
+                        <td><span class="badge">@pedido.Id</span></td>
+                        <td>
+                            <strong>@pedido.Cliente?.Nome</strong>
+                        </td>
+                        <td>@pedido.DataPedido.ToString("dd/MM/yyyy")</td>
+                        <td>
+                            <span class="tag">@(pedido.PedidoProdutos?.Count ?? 0) produto(s)</span>
+                        </td>
+                        <td>
+                            <strong class="valor">R$ @pedido.ValorTotal.ToString("N2")</strong>
+                        </td>
+                        <td>
+                            <div class="action-group">
+                                <a asp-action="Details" asp-route-id="@pedido.Id" class="btn btn-sm btn-info">Detalhes</a>
+                                <a asp-action="Edit" asp-route-id="@pedido.Id" class="btn btn-sm btn-warning">Editar</a>
+                                <a asp-action="Delete" asp-route-id="@pedido.Id" class="btn btn-sm btn-danger">Excluir</a>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</div>
