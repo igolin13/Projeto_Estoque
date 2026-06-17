@@ -52,10 +52,17 @@ else
                     <td>
                         <a asp-action="Details" asp-route-id="@item.Id"
                            class="btn btn-sm btn-outline-info" title="Detalhes">🔍</a>
-                        <a asp-action="Edit" asp-route-id="@item.Id"
-                           class="btn btn-sm btn-outline-warning" title="Editar">✏️</a>
-                        <a asp-action="Delete" asp-route-id="@item.Id"
-                           class="btn btn-sm btn-outline-danger" title="Excluir">🗑️</a>
+                        @if (item.Status != StatusExpedicao.Entregue)
+                        {
+                            <a asp-action="Edit" asp-route-id="@item.Id"
+                               class="btn btn-sm btn-outline-warning" title="Editar">✏️</a>
+                            <a asp-action="Delete" asp-route-id="@item.Id"
+                               class="btn btn-sm btn-outline-danger" title="Excluir">🗑️</a>
+                        }
+                        else
+                        {
+                            <span class="badge bg-success" title="Entregue — somente leitura">✅ Entregue</span>
+                        }
                     </td>
                 </tr>
             }
@@ -66,13 +73,13 @@ else
 @functions {
     string GetBadgeClass(StatusExpedicao status) => status switch
     {
-        StatusExpedicao.Pendente        => "bg-secondary",
-        StatusExpedicao.EmSeparacao     => "bg-warning text-dark",
+        StatusExpedicao.Pendente => "bg-secondary",
+        StatusExpedicao.EmSeparacao => "bg-warning text-dark",
         StatusExpedicao.ProntoParaEnvio => "bg-info text-dark",
-        StatusExpedicao.Despachado      => "bg-primary",
-        StatusExpedicao.EmTransporte    => "bg-primary",
-        StatusExpedicao.Entregue        => "bg-success",
-        StatusExpedicao.Cancelado       => "bg-danger",
-        _                               => "bg-secondary"
+        StatusExpedicao.Despachado => "bg-primary",
+        StatusExpedicao.EmTransporte => "bg-primary",
+        StatusExpedicao.Entregue => "bg-success",
+        StatusExpedicao.Cancelado => "bg-danger",
+        _ => "bg-secondary"
     };
 }

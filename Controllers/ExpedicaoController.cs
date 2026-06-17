@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using Projeto_Estoque.Data;       
+using Projeto_Estoque.Data;
 using Projeto_Estoque.Models;
 
 namespace Projeto_Estoque.Controllers
@@ -21,7 +21,6 @@ namespace Projeto_Estoque.Controllers
         // =====================================================================
         public async Task<IActionResult> Index()
         {
-            // Q1: Pedidos e seus clientes via relacionamento
             var expedicoes = await _context.Expedicoes
                 .Include(e => e.Pedido)
                     .ThenInclude(p => p.Cliente)
@@ -33,7 +32,6 @@ namespace Projeto_Estoque.Controllers
 
         // =====================================================================
         // DETAILS — Detalhes completos da expedição
-        // Mostra: dados da expedição, cliente, produtos do pedido
         // =====================================================================
         public async Task<IActionResult> Details(int? id)
         {
@@ -57,7 +55,6 @@ namespace Projeto_Estoque.Controllers
         // =====================================================================
         public async Task<IActionResult> Create()
         {
-            // Carrega pedidos que ainda não possuem expedição (RN4: pedido com cliente)
             var pedidosSemExpedicao = await _context.Pedidos
                 .Include(p => p.Cliente)
                 .Where(p => p.Expedicao == null && p.Cliente != null)
@@ -66,10 +63,9 @@ namespace Projeto_Estoque.Controllers
             ViewData["PedidoId"] = new SelectList(
                 pedidosSemExpedicao,
                 "Id",
-                "Id"  // customizado no helper abaixo
+                "Id"
             );
 
-            // SelectList customizada: exibe "Pedido #5 — João Silva"
             ViewData["PedidoSelectList"] = pedidosSemExpedicao
                 .Select(p => new SelectListItem
                 {
@@ -102,12 +98,10 @@ namespace Projeto_Estoque.Controllers
         {
             if (ModelState.IsValid)
             {
-                // Carrega o pedido para validações
                 var pedido = await _context.Pedidos
                     .Include(p => p.Cliente)
                     .FirstOrDefaultAsync(p => p.Id == expedicao.PedidoId);
 
-                // RN1 — Pedido deve existir
                 if (pedido == null)
                 {
                     ModelState.AddModelError("PedidoId", "Pedido não encontrado.");
@@ -115,7 +109,6 @@ namespace Projeto_Estoque.Controllers
                     return View(expedicao);
                 }
 
-                // RN4 — Pedido deve ter Cliente
                 if (pedido.Cliente == null)
                 {
                     ModelState.AddModelError("PedidoId", "O pedido selecionado não possui cliente associado.");
@@ -123,7 +116,6 @@ namespace Projeto_Estoque.Controllers
                     return View(expedicao);
                 }
 
-                // RN2 — DataEnvio >= DataPedido
                 if (expedicao.DataEnvio.Date < pedido.DataPedido.Date)
                 {
                     ModelState.AddModelError("DataEnvio",
@@ -143,6 +135,7 @@ namespace Projeto_Estoque.Controllers
 
         // =====================================================================
         // EDIT GET — Formulário de edição
+        // RN5: Se status for Entregue, redireciona para Details (somente leitura)
         // =====================================================================
         public async Task<IActionResult> Edit(int? id)
         {
@@ -154,6 +147,13 @@ namespace Projeto_Estoque.Controllers
                 .FirstOrDefaultAsync(e => e.Id == id);
 
             if (expedicao == null) return NotFound();
+
+            // RN5 — Expedição já entregue: bloqueia edição e redireciona para visualização
+            if (expedicao.Status == StatusExpedicao.Entregue)
+            {
+                TempData["MensagemAviso"] = "Esta expedição já foi entregue e não pode ser editada.";
+                return RedirectToAction(nameof(Details), new { id });
+            }
 
             ViewData["StatusList"] = new SelectList(
                 Enum.GetValues<StatusExpedicao>().Select(s => new
@@ -172,6 +172,7 @@ namespace Projeto_Estoque.Controllers
         // EDIT POST — Atualiza expedição com validações
         // RN2: DataEnvio >= DataPedido
         // RN3: Status Entregue não pode regredir
+        // RN5: Status Entregue bloqueia qualquer alteração
         // =====================================================================
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -182,13 +183,19 @@ namespace Projeto_Estoque.Controllers
 
             if (ModelState.IsValid)
             {
-                // Busca o estado atual no banco para aplicar RN3
                 var expedicaoAtual = await _context.Expedicoes
                     .AsNoTracking()
                     .Include(e => e.Pedido)
                     .FirstOrDefaultAsync(e => e.Id == id);
 
                 if (expedicaoAtual == null) return NotFound();
+
+                // RN5 — Bloqueia qualquer alteração se já estiver Entregue
+                if (expedicaoAtual.Status == StatusExpedicao.Entregue)
+                {
+                    TempData["MensagemAviso"] = "Esta expedição já foi entregue e não pode ser editada.";
+                    return RedirectToAction(nameof(Details), new { id });
+                }
 
                 // RN3 — Não pode regredir de Entregue
                 var statusesRegressivos = new[]
@@ -273,12 +280,9 @@ namespace Projeto_Estoque.Controllers
 
         // =====================================================================
         // RELATORIOS — Consultas LINQ Q2 e Q3
-        // Q2: GroupBy transportadora
-        // Q3: GroupBy + Where (Having)
         // =====================================================================
         public async Task<IActionResult> Relatorios()
         {
-            // Q2: Quantidade de pedidos enviados por transportadora
             var porTransportadora = await _context.Expedicoes
                 .GroupBy(e => e.Transportadora)
                 .Select(g => new
@@ -289,7 +293,6 @@ namespace Projeto_Estoque.Controllers
                 .OrderByDescending(x => x.Total)
                 .ToListAsync();
 
-            // Q3: Transportadoras com mais de 1 envio (ajustar X conforme necessidade)
             int limiteEnvios = 1;
             var transportadorasAtivas = await _context.Expedicoes
                 .GroupBy(e => e.Transportadora)
